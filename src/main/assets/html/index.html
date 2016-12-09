@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="bookmark" href="favicon.ico" type="image/x-icon"/>
+    <meta name="author" content="freddon"/>
+    <!-- Bootstrap -->
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/emoji.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="css/default.min.css"/>
+    <title></title>
+    <style>
+.blog-post{padding:10px;}
+.hide{
+  display: none;
+}
+img{
+  max-width: 100%;
+  min-width: 20px;
+  min-height: 20px;
+}
+.h1,h1{
+  font-size:26px;
+}
+.h2,h2{
+  font-size:22px;
+}
+.h3,h3{
+  font-size:20px;
+}
+.h4,h4{
+  font-size:17.5px;
+}
+.h5,h5{
+  font-size:16px;
+}
+blockquote{
+  color:#8d8c92;
+  font-size: 14px;
+}
+
+
+    </style>
+</head>
+<body class="container">
+
+<div class="row">
+    <div class="blog-post">
+        <div class="article-content"></div>
+    </div>
+
+</div>
+<script src="js/highlight.min.js"></script>
+<script src="js/marked.js"></script>
+<script>
+    ;
+    function g(selector){
+    return document.querySelector(selector);
+    }
+
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,//回车换成br
+    pedantic: false,
+    sanitize: true,
+    smartLists: true,
+    smartypants: false,
+  highlight: function (code, lang, callback) {
+    return hljs.highlightAuto(code).value;
+  }
+});
+
+
+ document.addEventListener("DOMContentLoaded", function(event) {
+   if(window.SnackBlogs==undefined){
+   return;
+   }
+   if(window.SnackBlogs.onDOMContentLoaded==undefined){
+   return;
+   }
+    window.SnackBlogs.onDOMContentLoaded();
+ });
+
+function loadData(data) {
+    var dat=data.replace(/<freddon>/gi,'\n');
+    g("div.article-content").innerHTML=marked(dat);
+    if (window.SnackBlogs!=undefined) {
+      window.SnackBlogs.onDataDidLoad();
+    }
+}
+
+var spanned=[];
+
+function loadSpan(data,isEnd) {
+    spanned.push(data);
+    if(isEnd==1){
+    loadData(spanned.join(''));
+    spanned=[];
+    }
+ }
+
+</script>
+</body>
+</html>
