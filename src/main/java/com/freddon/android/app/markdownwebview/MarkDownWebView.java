@@ -22,10 +22,28 @@ import java.util.Locale;
  * Created by fred on 2016/11/17.
  */
 public class MarkDownWebView extends WebView {
+
     public static final String HTML_URL = "file:///android_asset/html/index.html";
-    private static final String APPJSNAME = "SnackBlogs";
+
+    /**
+     * 该`句柄`可通过url传递或者js传递实现动态配置
+     * 本例不涉及
+     */
+    private static final String APPJSNAME = "freddon";//对应到网页js中的回调window自定义子对象的键
+
+    /**
+     * 由于JAVA和JS采用的不同标准进行encode和decode，
+     * 导致换行符传递过程中解析不正确，继而转markdown会出现错乱，
+     * 故先替换掉换行符，在js中渲染之前再替换回去
+     */
+    private final static String SWAP_BREAK_TAG = "<freddon>";
+
     private String content;
-    private static String headsJsonScript;
+
+    /**
+     * 分段通知到js
+     */
+    private final static int SEND_LENGTH_UNIT = 500;
 
     public MarkDownWebView(Context context) {
         this(context, null);
@@ -38,11 +56,11 @@ public class MarkDownWebView extends WebView {
     public MarkDownWebView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         if (!isInEditMode()) {
-            initialize(context);
+            initialize();
         }
     }
 
-    private void initialize(Context context) {
+    private void initialize() {
         setWebViewClient(new WebViewClient() {
 
             @Override
@@ -53,8 +71,6 @@ public class MarkDownWebView extends WebView {
                                 .parse(url));
                         view.getContext().startActivity(intent);
                         return true;
-                    } else if (url.contains(APPJSNAME+"://")) {
-//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     } else {
                         Intent intent = new Intent();
                         intent.setAction("android.intent.action.VIEW");
@@ -113,8 +129,7 @@ public class MarkDownWebView extends WebView {
         }
     }
 
-    public void setText(String content) {
-//        this.content = Uri.encode(content);//使用RFC-2396标准
+    public void setContent(String content) {
         this.content = content;
         loadUrl(HTML_URL);
     }
@@ -128,30 +143,22 @@ public class MarkDownWebView extends WebView {
         public void handleMessage(Message msg) {
             String script = String.valueOf(msg.obj);
             loadUrl(script);
-            if (msg.what == 1) {
-                if (!TextUtils.isEmpty(headsJsonScript)) loadUrl(headsJsonScript);
-            }
         }
     };
 
-    public void setHead(String headsJson) {
-        headsJsonScript = String.format(Locale.CHINESE, "javascript:loadHead('%s');", headsJson.replace("\n",""));
-    }
-
     private void splitSend(String content) {
         if (content == null) content = "";
-        final int spanLength = 500;
-        if (content.length() < 500) {
-            content = content.replace("\n", "<freddon>");
+        if (content.length() < SEND_LENGTH_UNIT) {
+            content = content.replace("\n", SWAP_BREAK_TAG);
             final String script = String.format(Locale.CHINESE, "javascript:loadSpan('%s',%d);", content, 1);
             Message msg = Message.obtain();
             msg.obj = script;
             msg.what = 1;
             handler.sendMessage(msg);
         } else {
-            String sendedString = content.substring(0, spanLength);
+            String sendedString = content.substring(0, SEND_LENGTH_UNIT);
             content = content.substring(sendedString.length());
-            sendedString = sendedString.replace("\n", "<freddon>");
+            sendedString = sendedString.replace("\n", SWAP_BREAK_TAG);
             Message msg = Message.obtain();
             msg.what = 0;
             if (TextUtils.isEmpty(content)) {

@@ -80,20 +80,20 @@ marked.setOptions({
 
 
  document.addEventListener("DOMContentLoaded", function(event) {
-   if(window.SnackBlogs==undefined){
+   if(window.freddon==undefined){
    return;
    }
-   if(window.SnackBlogs.onDOMContentLoaded==undefined){
+   if(window.freddon.onDOMContentLoaded==undefined){
    return;
    }
-    window.SnackBlogs.onDOMContentLoaded();
+    window.freddon.onDOMContentLoaded();
  });
 
 function loadData(data) {
     var dat=data.replace(/<freddon>/gi,'\n');
     g("div.article-content").innerHTML=marked(dat);
-    if (window.SnackBlogs!=undefined) {
-      window.SnackBlogs.onDataDidLoad();
+    if (window.freddon!=undefined) {
+      window.freddon.onDataDidLoad();
     }
 }
 
