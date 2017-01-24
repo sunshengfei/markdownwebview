@@ -1,5 +1,5 @@
 ### MarkDownWebView for Android
-> 本模块提取自个人另外一个博客的android项目，实现将markdown格式文本以webview解析显示。
+> 本模块(无法单独运行)提取自个人另外一个博客的android项目，实现将markdown格式文本以webview解析显示。
 
 ### 说明
 

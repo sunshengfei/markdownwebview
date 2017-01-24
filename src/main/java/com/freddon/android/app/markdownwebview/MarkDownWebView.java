@@ -149,7 +149,7 @@ public class MarkDownWebView extends WebView {
     private void splitSend(String content) {
         if (content == null) content = "";
         if (content.length() < SEND_LENGTH_UNIT) {
-            content = content.replace("\n", SWAP_BREAK_TAG);
+            content = content.replace("\n", SWAP_BREAK_TAG).replace("'","\\'");
             final String script = String.format(Locale.CHINESE, "javascript:loadSpan('%s',%d);", content, 1);
             Message msg = Message.obtain();
             msg.obj = script;
@@ -158,7 +158,7 @@ public class MarkDownWebView extends WebView {
         } else {
             String sendedString = content.substring(0, SEND_LENGTH_UNIT);
             content = content.substring(sendedString.length());
-            sendedString = sendedString.replace("\n", SWAP_BREAK_TAG);
+            sendedString = sendedString.replace("\n", SWAP_BREAK_TAG).replace("'","\\'");
             Message msg = Message.obtain();
             msg.what = 0;
             if (TextUtils.isEmpty(content)) {
