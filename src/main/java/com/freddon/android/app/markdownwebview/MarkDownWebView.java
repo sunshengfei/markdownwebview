@@ -1,5 +1,6 @@
 package com.freddon.android.app.markdownwebview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -60,6 +61,7 @@ public class MarkDownWebView extends WebView {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initialize() {
         setWebViewClient(new WebViewClient() {
 
@@ -110,7 +112,7 @@ public class MarkDownWebView extends WebView {
         webSetting.setDomStorageEnabled(true);
         webSetting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 //        loadUrl(HTML_URL);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             webSetting.setJavaScriptEnabled(true);
             addJavascriptInterface(new JavascriptInterfaceImpl() {
                 @JavascriptInterface
@@ -149,7 +151,7 @@ public class MarkDownWebView extends WebView {
     private void splitSend(String content) {
         if (content == null) content = "";
         if (content.length() < SEND_LENGTH_UNIT) {
-            content = content.replace("\n", SWAP_BREAK_TAG).replace("'","\\'");
+            content = content.replaceAll("[\r]?\n", SWAP_BREAK_TAG).replace("'","\\\'");
             final String script = String.format(Locale.CHINESE, "javascript:loadSpan('%s',%d);", content, 1);
             Message msg = Message.obtain();
             msg.obj = script;
@@ -158,7 +160,7 @@ public class MarkDownWebView extends WebView {
         } else {
             String sendedString = content.substring(0, SEND_LENGTH_UNIT);
             content = content.substring(sendedString.length());
-            sendedString = sendedString.replace("\n", SWAP_BREAK_TAG).replace("'","\\'");
+            sendedString = sendedString.replaceAll("[\r]?\n", SWAP_BREAK_TAG).replace("'","\\\'");
             Message msg = Message.obtain();
             msg.what = 0;
             if (TextUtils.isEmpty(content)) {
